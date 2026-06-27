@@ -206,11 +206,11 @@ io.on('connection', (socket) => {
 
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/Login.html'));
+    res.sendFile(path.join(__dirname, 'Frontend/Login.html'));
 })
 
 app.get('/signUp', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/Signup.html'));
+    res.sendFile(path.join(__dirname, 'Frontend/Signup.html'));
 })
 
 app.post('/signup', async (req, res) => {
@@ -290,7 +290,7 @@ app.get('/auth/google/callback',
 );
 
 app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/dashboard.html'));
+    res.sendFile(path.join(__dirname, '/Frontend/dashboard.html'));
 })
 
 app.get('/dashboard/feed', authenticateJWT, requireRole('customer', 'admin'), async (req, res) => {
@@ -373,7 +373,7 @@ app.post('/posts', authenticateJWT, upload.single('image'), async (req, res) => 
 
 
 app.get('/profile', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/profile.html'))
+    res.sendFile(path.join(__dirname, 'Frontend/profile.html'))
 })
 
 app.get('/profile/:user_id', authenticateJWT, requireRole('customer', 'admin'), async (req, res) => {
@@ -397,7 +397,7 @@ app.get('/profile/:user_id', authenticateJWT, requireRole('customer', 'admin'), 
 });
 
 app.get('/editProfile', async (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/EditProfile.html'));
+    res.sendFile(path.join(__dirname, 'Frontend/EditProfile.html'));
 })
 
 
@@ -540,7 +540,7 @@ app.post('/posts/:post_id/like', authenticateJWT, requireRole('customer', 'admin
 });
 
 app.get('/chat', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/chat.html'));
+    res.sendFile(path.join(__dirname, 'Frontend/chat.html'));
 })
 
 app.get('/chat/messages/:friendId', authenticateJWT, requireRole('customer', 'admin'), async (req, res) => {
@@ -563,7 +563,7 @@ app.get('/chat/messages/:friendId', authenticateJWT, requireRole('customer', 'ad
 });
 
 app.get('/users/search', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/Search.html'));
+    res.sendFile(path.join(__dirname, 'Frontend/Search.html'));
 })
 
 //This is for searching the user

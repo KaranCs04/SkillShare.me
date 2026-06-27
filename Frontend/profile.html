@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile -- SkillShare.me</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,500&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- 1. Login CSS first  → gives us all the :root variables -->
+    <link rel="stylesheet" href="login.css">
+
+    <!-- 2. Profile CSS on top → only adds new components -->
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body class="profile-page">
+
+    <nav class="topnav">
+        <div class="topnav__inner">
+            <a href="/dashboard" class="back-link" title="Back to profile">
+                <span class="back-arrow">←</span>
+                <span class="back-text">Dashboard</span>
+            </a>
+
+            <!-- Centre: brand -->
+            <a href="#" class="nav-brand">
+                <span class="logo-mark">◐</span>
+                <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+            </a>
+        </div>
+    </nav>
+
+
+
+
+    <div class="profile-header">
+        <div class="profile-card">
+            <div class="profile-card__top">
+
+                <!--Here is can it image of profilee-->
+                <div class="profile-identity">
+                    <h2 class="profile-username" id="username">Karan</h2>
+
+                </div>
+                <!--Here can be its Edit profile button-->
+            </div>
+        </div>
+
+    </div>
+    <!--This can be changed into the Followers Following-->
+    <div class="profile-stats">
+        <div class="stat">
+            <span class="stat__number" id="follower-count"></span>
+            <span class="stat__label">Following</span>
+        </div>
+
+    </div>
+
+    <div class="editProfile">
+        <a href="/editProfile" class="edit-profile-link">
+            <span>Edit Your Profile</span>
+
+        </a>
+    </div>
+
+    <main id="posts">
+        <p class="posts-label">Posts</p>
+        <div id="posts-grid">
+
+
+
+        </div>
+    </main>
+</body>
+
+<script>
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id');
+    // To show the profile bar 
+    async function loadFollowerBar() {
+
+        try {
+            const response = await fetch(`/profile/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            renderProfile(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    // This P following_count can be changed into the button
+    // Giving the user to allow person they follows
+    function renderProfile(profile) {
+        document.getElementById('username').innerHTML = `<h2>${profile.username}</h2>`;
+        document.getElementById('follower-count').innerHTML = `
+        
+        <p> ${profile.following_count}</p>
+       
+    `;
+
+    }
+
+
+
+    // Now showing the photos
+    async function loadPhotos() {
+        try {
+            const response = await fetch(`/user/posts/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            console.log(data);
+            renderPhotos(data);
+        } catch (err) {
+            console.log("Failed to load the Photos: ", err);
+        }
+    }
+
+
+    function renderPhotos(photos) {
+        const container = document.getElementById('posts-grid');
+
+        container.innerHTML = '';
+
+
+        if (photos.length === 0) {
+            container.innerHTML = `<div class="posts-empty">
+                        <span class="posts-empty__icon">📷</span>
+                        <p class="posts-empty__title">No posts yet</p>
+                        <p class="posts-empty__sub">Hit the + buttonto share your first skill</p>
+                    </div>`;
+            return;
+        }
+
+        photos.forEach(photo => {
+
+            const postCard = document.createElement('div');
+            postCard.classList.add('post-card');
+
+
+
+            const img = document.createElement('img');
+            const thumbnailUrl = photo.image_url.replace('/upload/', '/upload/w_400,h_400,c_fill/');
+            img.src = thumbnailUrl;
+            img.alt = photo.caption || 'Post Image';
+            img.classList.add('grid-item');
+
+            // Creating caption
+            const caption = document.createElement('p');
+            caption.textContent = photo.caption || '';
+            caption.classList.add('post-caption');
+
+            // Three dots for UI to users and drop down buttons
+
+            const menuBtn = document.createElement('button');
+            menuBtn.innerHTML = '⋮';
+            menuBtn.classList.add('post-menu-btn');
+            menuBtn.dataset.postId = photo.post_id;
+
+
+            const dropdown = document.createElement('div');
+            dropdown.classList.add('post-dropdown');
+            dropdown.style.display = 'none';
+            dropdown.innerHTML = `
+            <button class="dropdown-item" data-action="delete" data-post-id="${photo.post_id}">🗑️ Delete</button>
+            <button class="dropdown-item" data-action="cancel">✕ Cancel</button>
+            `;
+
+
+            postCard.appendChild(img);
+            postCard.appendChild(caption);
+            postCard.appendChild(menuBtn);
+            postCard.appendChild(dropdown);
+
+
+            container.appendChild(postCard);
+
+        });
+
+
+        // THis is bringing the dropdown box
+        container.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('post-menu-btn')) {
+                const card = e.target.closest('.post-card');
+                const dropdown = card.querySelector('.post-dropdown');
+                const isVisible = dropdown.style.display === 'block';
+                document.querySelectorAll('.post-dropdown').forEach(d => d.style.display = 'none');
+                dropdown.style.display = isVisible ? 'none' : 'block';
+                return;
+            }
+
+            if (e.target.classList.contains('dropdown-item')) {
+                const action = e.target.dataset.action;
+                const postId = e.target.dataset.postId;
+
+                if (action === 'cancel') {
+                    e.target.closest('.post-dropdown').style.display = 'none';
+                    return;
+                }
+                if (action === 'delete') {
+
+                    try {
+                        const response = await fetch(`/posts/${postId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token} ` }
+                        });
+
+                        if (response.ok) {
+                            e.target.closest('.post-card').remove();
+                        } else {
+                            const data = await response.json();
+                            alert(data.error);
+                        }
+
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+
+            }
+        });
+
+
+    }
+
+
+    loadFollowerBar();
+    loadPhotos();
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,500&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket-init.js"></script>
+</head>
+
+
+<body class="dashboard-page">
+    <nav class="topnav">
+        <div class="topnav__inner">
+            <div class="nav-brand">
+                <span class="logo-mark">◐</span>
+                <span class="logo-word">SkillShare<span class="logo-dot">.me</span>
+            </div>
+            </a>
+        </div>
+    </nav>
+    
+    <section class="stories-section">
+        <p class="stories-label">Following</p>
+        <div class="stories-bar">
+            <div class="stories-container" id="followingBar">
+
+            </div>
+        </div>
+        
+    </section>
+
+    <div id="chatOverlay"></div>
+ 
+<div id="chatDrawer">
+ 
+    <div class="drawer-header">
+        <div class="drawer-header__left">
+            <div class="drawer-ai-badge">◐</div>
+            <div>
+                <p class="drawer-title">SkillShare Assistant</p>
+                <p class="drawer-subtitle">Powered by Claude</p>
+            </div>
+        </div>
+        <button id="closeBtn" aria-label="Close">✕</button>
+    </div>
+ 
+    <div id="messagesArea"></div>
+ 
+    <div class="input-row">
+        <input type="text" id="chatInput" placeholder="Ask me anything…" autocomplete="off">
+        <button id="sendBtn">Send</button>
+    </div>
+ 
+</div>
+   
+<!--Here is the main post basically main function of coming up-->
+    <main class="feed-section" id="posts-grid">
+        
+    </main>
+<!---->
+    <footer class="footer-nav">
+        <div class="footer-nav__inner">
+        
+        <!--Home-->
+        <a href="/dashboard" class="footer-item active">
+             <span class="footer-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        </a>
+
+        <!--This is the search option-->
+        <a href="/users/search" class="footer-item active">
+            <span class="footer-icon">🔍</span>
+            <span>Search</span>
+        </a>
+
+         <div class="footer-item footer-item--post">
+            <button class="footer-post-btn" id="open-modal" aria-label="New post">+</button>
+            
+        </div>
+
+        
+
+         <!--Chat Feature to taking user to chat-->
+         <a href="/chat" class="footer-item" id="chatBtn">
+            <span class="footer-icon">💬</span>
+            <span>Chat</span>
+        </a>
+       
+         <!-- Profile -->
+        <a href="/profile" class="footer-item">
+            <span class="footer-icon">👤</span>
+            <span>Profile</span>
+        </a>
+
+        <div class="footer-item" id="chatToggleBtn">
+            <span class="footer-icon">✦</span>
+            <span>Ask AI</span>
+        </div>
+
+        </div>
+
+    </footer>
+   
+   
+    <div id="post-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="close-modal" aria-label="Close">X</button>
+            <h2>Create a Post</h2>
+            <form id="post-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="post-image">Upload Image</label>
+                    <input type="file" id="post-image" name="image" accept="image/*" required>
+
+                </div>
+                <div class="form-group">
+                    <label for="post-caption">Caption</label>
+                    <textarea id="post-caption" name="caption" rows="4" placeholder="Write Anything world would like to know"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Post</button>
+
+            </form>
+        </div>
+
+
+    </div>
+
+    
+
+
+
+
+</body>
+
+<script>
+
+    // This is for the code to get the User JWT through
+    //Google Sign 
+
+    (function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+
+        if (tokenFromUrl) {
+            localStorage.setItem('token', tokenFromUrl);
+            window.history.replaceState({}, document.title, '/dashboard');
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+        }
+    })();
+
+
+    // This is what showing the form the code
+    const openBtn = document.getElementById('open-modal');
+    const closeBtn = document.getElementById('close-modal');
+    const overlay = document.getElementById('post-modal');
+
+    openBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        overlay.classList.add('active');
+    })
+
+    closeBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        overlay.classList.remove('active');
+    })
+
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('active');
+        }
+    })
+
+    // Clicking button to take them to the chat page
+
+    // chatBtn.addEventListener('click',()=>{
+    //     window.location.href='/chat';
+    // })
+
+
+    // This is the code to fetch the followers for the database
+    // and show it in the html
+    async function loadFollowingBar() {
+
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/following', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            renderFollowingBar(data);
+
+        } catch (err) {
+            console.log('Failed to load following bar: ', err);
+        }
+
+    }
+
+    function renderFollowingBar(users) {
+        const container = document.getElementById('followingBar');
+
+        // Clear existing content
+        container.innerHTML = '';
+
+        if (users.length === 0) {
+            container.innerHTML = `<p class="stories-empty">Follow people to see them here</p>`;
+            return;
+        }
+
+        users.forEach(user => {
+            const initial=user.username.charAt(0).toUpperCase();
+            const item = document.createElement('div');
+            item.className = 'story-item';
+
+            item.innerHTML = `
+           <div class="story-avatar-ring">
+            <div class="story-avatar">${initial}</div>
+            </div>
+                <span class="story-name">${user.username}</span>
+            
+        `;
+
+            container.appendChild(item);
+        });
+    }
+
+    loadFollowingBar();
+
+  
+
+    // This is for the AI chatbot thing
+    const toggleBtnAI = document.getElementById('chatToggleBtn');
+    const closeBtnAI = document.getElementById('closeBtn');
+    const overlayAI = document.getElementById('chatOverlay');
+    const drawerAI = document.getElementById('chatDrawer');
+    const messagesAreaAI = document.getElementById('messagesArea');
+    const chatInputAI = document.getElementById('chatInput');
+    const sendBtnAI = document.getElementById('sendBtn');
+
+    function openDrawer() {
+        drawerAI.classList.add('open');
+        overlayAI.classList.add('open');
+        chatInputAI.focus();
+    }
+
+    function closeDrawer() {
+        drawerAI.classList.remove('open');
+        overlayAI.classList.remove('open');
+    }
+
+    toggleBtnAI.addEventListener('click', openDrawer);
+    closeBtnAI.addEventListener('click', closeDrawer);
+    overlayAI.addEventListener('click', closeDrawer);
+
+    function addBubble(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.classList.add('msg-bubble', sender);
+        bubble.textContent = text;
+        messagesAreaAI.appendChild(bubble);
+        messagesAreaAI.scrollTop = messagesAreaAI.scrollHeight;
+    }
+
+    function showTyping() {
+        const typing = document.createElement('div');
+        typing.id = 'typingIndicator';
+        typing.className = 'msg-bubble typing';
+        typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        typing.textContent = '...';
+        messagesAreaAI.appendChild(typing);
+        messagesAreaAI.scrollTop = messagesAreaAI.scrollHeight;
+    }
+
+    function hideTyping() {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+    }
+
+    async function sendMessage() {
+        const text = chatInputAI.value.trim();
+        if (!text) return;
+
+        addBubble(text, 'user');
+        chatInputAI.value = '';
+
+        showTyping();
+
+
+        try {
+            const response = await fetch('http://localhost:3000/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+
+            if (!response.ok) throw new Error('Request failed');
+
+
+            const data = await response.json();
+            hideTyping();
+            addBubble(data.answer, 'bot');
+        } catch (err) {
+            hideTyping();                                    // ✅ hide typing on error too
+            addBubble('Something went wrong.', 'bot');       // ✅ show error in chat
+            console.log(err);
+        }
+    };
+
+    sendBtnAI.addEventListener('click', sendMessage);
+
+    chatInputAI.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    })
+
+
+
+    // Bringing the user picture and their followers picture
+
+    async function loadFeed() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/dashboard/feed', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const photos = await response.json();
+            console.log(photos);
+            renderFeed(photos);
+        } catch (err) {
+            console.log('Failed to load the following bar:', err);
+        }
+    }
+
+    function renderFeed(photos) {
+        const container = document.getElementById('posts-grid');
+
+        container.innerHTML = '';
+
+
+        if (photos.length === 0) {
+            container.innerHTML =` <div class="feed-empty">
+                    <span class="feed-empty__icon">🌱</span>
+                    <p class="feed-empty__title">Your feed is empty</p>
+                    <p class="feed-empty__sub">Follow people to see their posts here</p>
+                </div>`;
+            return;
+        }
+
+        photos.forEach(photo => {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            const initial=photo.username.charAt(0).toUpperCase();
+            const url=photo.image_url.replace('/upload/', '/upload/w_320,h_240,c_fill/');
+
+            // This is the putting the everything about the post into html
+            card.innerHTML = `
+            <div class="post-header">
+            <div class="post-header-avatar">${initial}</div>
+        <span class="post-username">${photo.username}</span>
+    </div>
+      <img 
+            src="${url}" 
+            alt="${photo.caption || 'Post'}" 
+            class="post-image"
+        />
+
+        <div class="post-actions">
+            <button class="like-btn" data-post-id="${photo.post_id}" data-liked="false" >❤️</button>
+            <span class="like-count" id="like-${photo.post_id}">0 likes</span>
+
+        </div>
+
+        <div class="post-caption">
+            <strong>${photo.username}</strong>${photo.caption || ''}
+        </div>
+            
+        `
+
+            // Wiring up button and seeing the count is working or not
+
+            const likeBtn = card.querySelector('.like-btn');
+            likeBtn.addEventListener('click', async function () {
+                // console.log('Like button clicked, postId:', this.dataset.postId); 
+                const postId = this.dataset.postId;
+                const isLiked = this.dataset.liked === 'true';
+
+                const likeCount = document.getElementById(`like-${postId}`);
+                console.log('Liked Count is: ', likeCount);
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/posts/${postId}/like`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    likeCount.textContent = `${data.like_count} likes`;
+                    const isNowLiked=data.liked ?? (this.dataset.liked!='true');
+                    this.textContent   = isNowLiked ? '❤️' : '🤍';
+                    this.dataset.liked = isNowLiked ? 'true' : 'false';
+                } catch (err) {
+                    console.log('like failed: ', err);
+                }
+
+            })
+
+
+
+            container.appendChild(card);
+
+
+
+        })
+    }
+    loadFeed();
+
+      //This is the code for getting the image and caption
+    const form = document.getElementById('post-form');
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        console.log(formData);
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('/posts', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            })
+            const data = await response.json()
+
+            if (response.ok) {
+                alert('Post uploaded');
+                overlay.classList.remove('active');
+                form.reset();
+                loadFeed();
+
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    });
+
+
+</script>
+
+
+</html>

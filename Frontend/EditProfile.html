@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Profile · SkillShare.me</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="EditProfile.css">
+</head>
+
+<body>
+
+
+    <nav class="topnav">
+        <div class="topnav__inner">
+            <a href="/profile" class="back-link" title="Back to profile">
+                <span class="back-arrow">←</span>
+                <span class="back-text">Profile</span>
+            </a>
+
+            <!-- Centre: brand -->
+            <a href="#" class="nav-brand">
+                <span class="logo-mark">◐</span>
+                <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+            </a>
+        </div>
+    </nav>
+
+
+
+    <main class="edit-man">
+        <div class="edit-card">
+            <form id="editForm" novalidate enctype="multipart/form-data">
+                <section class="form-section" aria-label="Profile photo">
+                    <div class="section-label">
+                        <h2>Profile Photo</h2>
+                    </div>
+
+                    <div class="avatar-edit-wrap">
+                        <div class="avatar-ring" id="avatarRing">
+                            <div class="avatar-preview" id="render-image">
+
+                            </div>
+
+
+                            <label for="avatar-image" class="avatar-overlay" title="Upload new photo">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span>Change</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="avatar-meta">
+                        <input type="file" id="avatar-image" name="image" accept="image/*" class="sr-only">
+                        <label for="avatar-image" class="btn-upload">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            Upload photo
+                        </label>
+
+                        <span class="file-chosen" id="fileChosen"></span>
+                    </div>
+                </section>
+                <div class="form-divider"></div>
+
+
+
+                <section class="form-section" aria-label="Bio">
+                    <div class="section-label">
+                        <h2>Bio</h2>
+                        <!-- <p>Here is my cool little bio</p> -->
+                    </div>
+
+                    <div class="bio-field">
+                        <!-- Current bio (JS fills the preview span) -->
+                        <div class="current-bio" id="render-bio">
+                            <!-- JS injects <span>bio text</span> here -->
+                        </div>
+
+                        <div class="field">
+                            <label for="bio">New bio</label>
+                            <textarea id="bio" name="bio" rows="3"
+                                placeholder="I throw pots on weekends and burn sourdough on purpose…"
+                                maxlength="160"></textarea>
+                            <span class="char-hint">Up to 160 characters</span>
+                        </div>
+                    </div>
+                </section>
+                <div class="form-divider"></div>
+
+                <div class="save-bar">
+
+                    <!-- Hidden until user changes something (toggled by JS) -->
+                    <button type="submit" id="save-btn" class="btn-primary" style="display:none;">
+                        Save changes
+                        <span class="arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+
+
+
+
+
+</body>
+<script>
+
+    // This is making the input button visible on and off
+    const bioInput = document.getElementById('bio');
+    const avatarInput = document.getElementById('avatar-image');
+    const saveBtn = document.querySelector('button[type="submit"]');
+    const fileChosen=document.getElementById('fileChosen');
+
+    function checkForm() {
+        const bioFilled = bioInput.value.trim() !== '';
+        const imageSelected = avatarInput.files.length > 0;
+
+        if (bioFilled || imageSelected) {
+            saveBtn.style.display = 'block';
+        } else {
+            saveBtn.style.display = 'none';
+        }
+    }
+
+    bioInput.addEventListener('input', checkForm);
+    avatarInput.addEventListener('change', checkForm);
+     
+
+    // This is for rendering the image_url
+    // Their Bio
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id');
+    async function loadProfile() {
+        try {
+            const response = await fetch(`/profile/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+            renderProfile(data);
+
+        } catch (err) {
+            console.log('Failed to load profile ', err);
+        }
+    }
+
+
+    function renderProfile(userData) {
+        const image = document.getElementById('render-image');
+        const bio = document.getElementById('render-bio');
+
+        if(userData.avatar_url){
+            const avatarUrl = userData.avatar_url.replace(
+            '/upload/',
+            '/upload/w_400,h_400,c_fill,g_face,f_webp/'
+            );
+
+            image.innerHTML = `<img src="${avatarUrl}" alt="Profile photo"  />`;
+        }else{
+            image.innerHTML = `<span class="avatar-fallback">
+            ${userData.username?.charAt(0).toUpperCase()}
+            </span>`;
+        }
+
+        // image.innerHTML=`<img src=${userData.avatar_url} />`;
+        bio.innerHTML = `<span>${userData.bio}</span>`
+
+
+    }
+
+    loadProfile();
+
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        const bioValue = bioInput.value.trim();
+        const imageFile = avatarInput.files[0];
+
+        if (bioValue) formData.append('bio', bioValue);
+        if (imageFile) formData.append('image', imageFile);
+
+        try {
+            const response = await fetch(`/profile/${userId}`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` },
+                // Never set Content-Type manually with FormData!
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Profile updated successfully!');
+                loadProfile();
+            } else {
+                alert(data.error);
+            }
+
+        } catch (err) {
+            console.log('Failed to update profile:', err);
+        }
+
+
+    })
+
+</script>
+
+</html>

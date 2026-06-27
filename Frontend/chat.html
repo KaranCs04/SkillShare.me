@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile · SkillShare.me</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap"
+        rel="stylesheet">
+</head>
+<!-- 1. Design tokens (same :root variables as login) -->
+    <link rel="stylesheet" href="login.css">
+
+    <!-- 2. Chat-specific styles -->
+    <link rel="stylesheet" href="chat.css">
+
+    <!-- Socket.io client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="/socket-init.js"></script> -->
+<body>
+    <nav class="topnav">
+        <div class="topnav__inner">
+            <a href="/dashboard" class="back-link" title="Back to dashboard">
+                <span class="back-arrow">←</span>
+                <span class="back-text">Dashboard</span>
+            </a>
+
+            <!-- Centre: brand -->
+            <a href="#" class="nav-brand">
+                <span class="logo-mark">◐</span>
+                <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+            </a>
+        </div>
+    </nav>
+     
+
+     <p class="following-label">Messenger</p>
+
+    <!--Following Row-->
+    <section class="following-section">
+       
+        <div class="user-table" id="users">
+
+        </div>
+    </section>
+    <!--Modal for the user and thier friend -->
+    <div class="modal-overlay" id="chatModal">
+        <div class="modal-box">
+            <!--Header: mini avatar + name + close-->
+           <div class="modal-header">
+                <div class="modal-header__left">
+                    <div class="modal-avatar" id="modalAvatar"></div>
+                    <h3 class="modal-friend-name" id="modalFriendName">Friend Name</h3>
+                </div>
+                <button class="modal-close" id="closeModal" aria-label="Close chat">✕</button>
+            </div>
+
+            <!--Messages-->
+            <div class="modal-messages" id="modalMessages">
+
+            <!--Input Row-->
+            </div>
+              <div class="modal-input">
+                <input type="text" id="messageInput" placeholder="Type a message…" autocomplete="off">
+                <button class="btn-send" id="sendBtn">
+                    Send <span>↑</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+<script>
+  
+    const token=localStorage.getItem('token');
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentUserId = payload.userId;
+    // console.log(payload);
+    let chatWithUserId = null;  
+
+    // LOAD FOllOWING BAR
+    async function loadFollowingBar() {
+
+
+        try {
+
+            const response = await fetch('/following', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+            renderFollowingBar(data);
+        } catch (err) {
+            console.log('Failed to load following Bar: ', err);
+        }
+    }
+
+    function renderFollowingBar(users) {
+        const container = document.getElementById('users');
+
+        container.innerHTML = '';
+        if (users.length === 0) {
+            container.innerHTML = '<p>Follow People to start chatting</p>';
+            return;
+        }
+
+        users.forEach(friend => {
+            const item = document.createElement('div');
+            item.className = 'friend-item';
+            item.dataset.userId = friend.user_id;
+            item.dataset.username = friend.username;
+
+            const initial=friend.username.charAt(0).toUpperCase();
+
+            item.innerHTML = `
+            <div class="friend-avatar">${initial}</div>
+            <span class="friend-name">${friend.username}</span>
+            <p class="friend-hint">Tap to chat</p>`;
+
+            container.appendChild(item);
+            item.addEventListener('click', () => openChat(friend.user_id, friend.username));
+
+        })
+    }
+
+
+    async function openChat(friendId, friendName) {
+        document.getElementById('chatModal').classList.add('active');
+
+        document.getElementById('modalFriendName').textContent = friendName;
+        chatWithUserId = friendId;
+
+        socket.emit('join-chat', { userId: currentUserId, otherUserId: friendId });
+
+        try {
+            const response = await fetch(`/chat/messages/${friendId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const messages = await response.json();
+            console.log(messages);
+            renderMessages(messages);
+        } catch (err) {
+            console.log('Failed to load message', err);
+        }
+
+    }
+
+
+    function renderMessages(messages) {
+
+        const container = document.getElementById('modalMessages');
+        container.innerHTML = '';
+
+        if (messages.length === 0) {
+            container.innerHTML = `<p>No messages yet -- say hello !</p>`;
+            return;
+        }
+
+        messages.forEach(msg => {
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.classList.add(String(msg.sender_id) === String(currentUserId)? 'sent' : 'received');
+            bubble.textContent = msg.content;
+            container.appendChild(bubble);
+        });
+
+        container.scrollTop=container.scrollHeight;
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('chatModal').classList.remove('active');
+        document.getElementById('modalMessages').innerHTML = '';  // clear messages on close
+    });
+
+
+    loadFollowingBar();
+
+    // Usage of Sockets
+
+    // CurrentUser
+
+     const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+        console.log('Socket connected: ', socket.id);
+    });
+
+    socket.on('receive-message', (message) => {
+        appendMessage(message);
+    });
+
+    socket.on('message-error', ({ error }) => {
+        console.log('Message failed: ', error);
+    });
+
+    
+    document.getElementById('sendBtn').addEventListener('click', () => {
+        const content = document.getElementById('messageInput').value.trim();
+
+        if (!content) return;
+
+        socket.emit('send-message', {
+            senderId: currentUserId,
+            receiverId: chatWithUserId,
+            senderName:payload.username,
+            content: content
+        });
+
+        document.getElementById('messageInput').value = '';
+    });
+
+    function appendMessage(msg) {
+        const container = document.getElementById('modalMessages');
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        bubble.classList.add(String(msg.sender_id) === String(currentUserId) ? 'sent' : 'received');
+        bubble.textContent = msg.content;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight; // auto scroll to bottom
+    }
+
+</script>
+
+</html>

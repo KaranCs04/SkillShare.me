@@ -1,0 +1,606 @@
+/* =====================================================
+   SkillShare.me — Profile Page
+   Extends login.css design tokens. Import login.css first,
+   or copy the :root block from login.css above this file.
+   ===================================================== */
+
+/* ---------- PAGE SHELL ---------- */
+.profile-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* =====================================================
+   TOPNAV
+   ===================================================== */
+.topnav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 70%;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border:2px solid black;
+    box-shadow: var(--shadow-nav);
+}
+.topnav__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: background .15s, border-color .15s, color .15s, transform .05s;
+}
+.back-link:hover { background: var(--bg); border-color: var(--ink-mute); color: var(--ink); }
+.back-link:hover .back-arrow { transform: translateX(-3px); }
+.back-link:active { transform: translateY(1px); }
+.back-arrow {
+    font-size: 16px;
+    display: inline-block;
+    transition: transform .2s ease;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.logo-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 17px;
+    transform: translateY(4px);
+}
+.logo-word {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+.logo-dot { color: var(--accent); font-style: italic; }
+
+.nav-actions { display: flex; align-items: center; gap: 4px; }
+
+.nav-icon-btn {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    color: var(--ink-soft);
+    transition: background .15s, color .15s;
+}
+.nav-icon-btn:hover { background: var(--bg); color: var(--ink); }
+
+.notif-badge {
+    position: absolute;
+    top: 5px; right: 5px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    border: 2px solid #fff;
+}
+
+.nav-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-grid;
+    place-items: center;
+    margin-left: 6px;
+    border: 2px solid var(--line);
+    letter-spacing: 0.04em;
+    transition: border-color .15s;
+}
+.nav-avatar:hover { border-color: var(--accent); }
+
+
+
+/* =====================================================
+   PAGE HEADER
+   ===================================================== */
+.page-head {
+    background:
+        radial-gradient(800px 320px at 50% 0%, oklch(0.96 0.05 65) 0%, transparent 70%),
+        var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 40px 24px 32px;
+    text-align: center;
+}
+.page-head__inner {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 5px 10px;
+    border-radius: 999px;
+    margin-bottom: 4px;
+}
+
+.page-head h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(26px, 3.5vw, 36px);
+    letter-spacing: -0.025em;
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.05;
+}
+.page-head p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+}
+.page-head p strong { color: var(--ink); font-weight: 700; }
+
+/* =====================================================
+   EDIT CARD
+   ===================================================== */
+.edit-main {
+    max-width: var(--content-w);
+    margin: 32px auto 60px;
+    padding: 0 24px;
+}
+
+.edit-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+
+
+/* =====================================================
+   PROFILE HEADER CARD
+   ===================================================== */
+.profile-header {
+    max-width: 680px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 32px 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ---------- TOP ROW: avatar + name + button ---------- */
+.profile-card__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+/* Avatar */
+.profile-avatar {
+    flex: none;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 3px solid var(--bg-card);
+    box-shadow: 0 0 0 2px var(--line-strong);
+    display: grid;
+    place-items: center;
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    overflow: hidden;
+    position: relative;
+}
+
+/* If a real <img> is placed inside .profile-avatar */
+.profile-avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Name + bio block */
+.profile-identity {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-username {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-handle {
+    font-size: 13px;
+    color: var(--ink-mute);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: 0.03em;
+    margin: 0;
+}
+
+/* Edit / Follow button (top-right) */
+.btn-profile-action {
+    appearance: none;
+    flex: none;
+    border: 1.5px solid var(--line-strong);
+    background: var(--bg-card);
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 9px 18px;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .05s ease;
+    white-space: nowrap;
+}
+
+.btn-profile-action:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+}
+
+.btn-profile-action:active { transform: translateY(1px); }
+
+/* "Follow" variant — filled accent */
+.btn-profile-action--follow {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+}
+
+.btn-profile-action--follow:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ---------- STATS ROW ---------- */
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    gap: 0;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+}
+
+/* vertical dividers between stats */
+.stat + .stat::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 10%; bottom: 10%;
+    width: 1px;
+    background: var(--line);
+}
+
+.stat__number {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.stat__label {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+
+/* Accent highlight on hover — subtle stat interaction */
+.stat:hover .stat__number { color: var(--accent); }
+.stat { transition: color .15s ease; cursor: default; }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 600px) {
+    .profile-header {
+        margin-top: 24px;
+        padding: 0 14px;
+    }
+
+    .profile-card {
+        padding: 22px 18px 20px;
+        gap: 18px;
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 24px;
+    }
+
+    .profile-username { font-size: 20px; }
+
+    .stat__number { font-size: 20px; }
+}
+
+@media (max-width: 380px) {
+    .profile-card__top {
+        flex-wrap: wrap;
+    }
+
+    .btn-profile-action {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+    }
+}
+
+
+
+/* =====================================================
+   POSTS SECTION
+   ===================================================== */
+#posts {
+    max-width: 680px;
+    margin: 28px auto 60px;
+    padding: 0 20px;
+}
+ 
+/* ---------- SECTION LABEL ---------- */
+.posts-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+ 
+.posts-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+}
+ 
+/* ---------- GRID ---------- */
+#posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+ 
+/* ---------- INDIVIDUAL CARD ---------- */
+.post-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    position:relative;
+    
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease;
+    cursor: pointer;
+}
+ 
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 1px 0 rgba(26,23,20,.04),
+        0 32px 64px -24px rgba(26,23,20,.22);
+}
+ 
+/* ---------- IMAGE — always square ---------- */
+.post-card .grid-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--line);
+}
+ 
+/* ---------- CAPTION ---------- */
+.post-caption {
+    padding: 10px 12px 11px;
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+ 
+    /* clamp to 2 lines max so the grid stays even */
+    display: -webkit-box;
+    
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+ 
+    /* empty caption takes up minimum space */
+    min-height: 38px;
+}
+ 
+/* ---------- EMPTY STATE ---------- */
+.posts-empty {
+    grid-column: 1 / -1;               /* span all 3 columns */
+    background: var(--bg-card);
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+ 
+.posts-empty__icon {
+    font-size: 32px;
+    line-height: 1;
+    opacity: .45;
+}
+ 
+.posts-empty__title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0;
+}
+ 
+.posts-empty__sub {
+    font-size: 13.5px;
+    color: var(--ink-mute);
+    margin: 0;
+    max-width: 26ch;
+}
+ 
+/* =====================================================
+   RESPONSIVE — GRID
+   ===================================================== */
+@media (max-width: 600px) {
+    #posts {
+        margin-top: 20px;
+        padding: 0 14px;
+    }
+ 
+    #posts-grid {
+        gap: 10px;
+    }
+ 
+    .post-caption {
+        font-size: 11.5px;
+        padding: 8px 10px 9px;
+    }
+}
+ 
+@media (max-width: 420px) {
+    /* drop to 2 columns on very small screens */
+    #posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+ /* Styling the button three for the  post */
+
+ .post-menu-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-dropdown {
+    position: absolute;
+    top: 42px;
+    right: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+    z-index: 10;
+    min-width: 130px;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background: #f4efe6;
+}

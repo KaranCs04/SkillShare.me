@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Page For SkillShareMe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="signup.css">
+</head>
+
+
+<body>
+
+    <body>
+        <div class="page page--reverse">
+
+            <!-- Left Side Main Form -->
+            <main class="auth">
+                <div class="auth__inner">
+
+                    <!-- HEADER -->
+                    <header class="auth__topbar">
+                        <a href="Login.html" class="back-link" title="Back to sign in">
+                            <span class="back-arrow">←</span>
+                            <span class="back-text">Sign in</span>
+                        </a>
+                        <div class="brand-mobile">
+                            <span class="logo-mark">◐</span>
+                            <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+                        </div>
+                    </header>
+
+                    <header class="auth__head">
+                        <span class="eyebrow">Step 1 of 1 · It's quick</span>
+                        <h2>Make an account</h2>
+                        <p class="sub">Start a feed of skills your friends will actually want to scroll.</p>
+                    </header>
+
+                    <button type="button" class="btn-google">
+                        <span class="g-icon" aria-hidden="true">G</span>
+                        Sign up with Google
+                    </button>
+
+                    <div class="divider"><span>or use your email</span></div>
+
+                    <form class="form" id="signUpForm" method="POST" action="/signup" novalidate>
+
+                        <!-- Username + Email side by side -->
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="username">Username</label>
+                                <input type="text" name="username" id="username" placeholder="yourhandle"
+                                    autocomplete="username" pattern="[a-zA-Z0-9_\.]+" required>
+                            </div>
+                            <div class="field">
+                                <label for="email">Email</label>
+                                <input type="email" name="email" id="email" placeholder="you@domain.com"
+                                    autocomplete="email" required>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="field">
+                            <label for="password">Password</label>
+                            <div class="password-wrap">
+                                <input type="password" name="password" id="password" placeholder="At least 8 characters"
+                                    autocomplete="new-password" minlength="8" required>
+                                <input type="checkbox" id="reveal1" class="reveal-toggle" hidden>
+                                <label for="reveal1" class="reveal" title="Show password">
+                                    <span class="reveal__eye-on">show</span>
+                                    <span class="reveal__eye-off">hide</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="field">
+                            <label for="confirmPassword">Confirm password</label>
+                            <div class="password-wrap">
+                                <input type="password" name="confirmPassword" id="confirmPassword"
+                                    placeholder="Re-type it" autocomplete="new-password" required>
+                                <input type="checkbox" id="reveal2" class="reveal-toggle" hidden>
+                                <label for="reveal2" class="reveal" title="Show password">
+                                    <span class="reveal__eye-on">show</span>
+                                    <span class="reveal__eye-off">hide</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="field">
+                            <div class="field__row">
+                                <label for="description">Short bio</label>
+                                <span class="hint">Optional</span>
+                            </div>
+                            <textarea name="description" id="description" rows="3" placeholder="Be Creative With You..."
+                                maxlength="160"></textarea>
+                            <span class="hint hint--end">Up to 160 characters</span>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            Create account
+                           <span class="arrow">→</span>
+                        </button>
+                    </form>
+
+                    <footer class="auth__foot">
+                        <a href="#">Terms</a>
+                        <span>·</span>
+                        <a href="#">Privacy</a>
+                        <span>·</span>
+                        <a href="#">Help</a>
+                    </footer>
+                </div>
+            </main>
+
+            <!-- Right Panel -->
+            <aside class="showcase showcase--alt" aria-hidden="true">
+                <div class="showcase__brand">
+                    <span class="logo-mark">◐</span>
+                    <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+                </div>
+
+                <div class="showcase__headline">
+                    <h1>
+                        Got a<br>
+                        <span class="ital">skill?</span><br>
+                        Post it.
+                    </h1>
+                    <p>No follower count. No filters. Just a photo of something you can do — and friends who clap when
+                        you get better at it.</p>
+                </div>
+
+                <!-- A "preview" of what their first post might look like -->
+                <div class="preview-post">
+                    <div class="preview-post__head">
+                        <span class="avatar">@</span>
+                        <div>
+                            <strong>@yourhandle</strong>
+                            <span class="meta">just now · your first skill</span>
+                        </div>
+                        <span class="more">···</span>
+                    </div>
+                    <div class="preview-post__img" data-label="Your skill goes here"></div>
+                    <div class="preview-post__actions">
+                        <span>♡ 0</span>
+                        <span>✶ Endorse</span>
+                        <span>↗ Share</span>
+                    </div>
+                    <p class="preview-post__caption">
+                        <strong>@yourhandle</strong> first day, first try. teach me yours?
+                    </p>
+                </div>
+
+                <footer class="showcase__foot">
+                    <span>welcome aboard ✦</span>
+                    <span>free forever for early folks</span>
+                </footer>
+            </aside>
+
+        </div> <!-- Close page--reverse -->
+    </body>
+
+</body>
+
+<script>
+     const toggle = document.querySelector('.reveal-toggle');
+    const password = document.querySelector('#password');
+    const eyeOn = document.querySelector('.reveal__eye-on');
+    const eyeOff = document.querySelector('.reveal__eye-off');
+
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            password.type = "text";
+            eyeOn.style.display = "none";
+            eyeOff.style.display = "inline";
+        } else {
+            password.type = "password";
+            eyeOn.style.display = "inline";
+            eyeOff.style.display = "none";
+        }
+    });
+
+       
+    const confirmpassword = document.querySelector('#confirmPassword');
+    const toggleConfirm = document.querySelector('#reveal2');
+
+    toggleConfirm.addEventListener('change', () => {
+        if (toggleConfirm.checked) {
+            confirmpassword.type = "text";
+            eyeOn.style.display = "none";
+            eyeOff.style.display = "inline";
+        } else {
+            confirmpassword.type = "password";
+            eyeOn.style.display = "inline";
+            eyeOff.style.display = "none";
+        }
+    });
+
+
+    const SignUpForm=document.getElementById('signUpForm');
+
+    SignUpForm.addEventListener('submit',async(e)=>{
+        e.preventDefault();
+
+        const email=document.getElementById('email').value;
+        const password=document.getElementById('password').value;
+        const username=document.getElementById('username').value;
+        const description=document.getElementById('description').value;
+
+
+        if(!email || !password){
+            alert('Please enter email and password both');
+            return;
+        }
+
+        try{
+            const response=await fetch('/signup',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({email,password,username,description})
+            });
+
+        if(response.ok){
+            window.location.href="/";
+        }else{
+            alert(data.error || 'sign Up Failed');
+        }
+
+
+        }catch(err){
+            alert('something went wrong, please try again');
+            console.error(err);
+        }
+    })
+
+
+    
+</script>
+
+</html>

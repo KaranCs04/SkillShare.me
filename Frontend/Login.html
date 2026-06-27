@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Share Me</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+</head>
+
+
+
+<body>
+    <div class="page">
+
+        <!-- ============ LEFT: SHOWCASE PANEL ============ -->
+        <aside class="showcase" aria-hidden="true">
+            <div class="showcase__brand">
+                <span class="logo-mark">◐</span>
+                <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+            </div>
+
+            <div class="showcase__headline">
+                <h1>
+                    Share what<br>
+                    you<span class="ital"> know.</span><br>
+                    Learn what<br>
+                    you<span class="ital"> don't.</span>
+                </h1>
+                <p>A feed of skills — not selfies. Post a photo of something you can do, and discover what your friends
+                    are great at.</p>
+            </div>
+
+            <!-- Faux post mosaic (placeholders, not real images) -->
+            <div class="mosaic" role="presentation">
+                <figure class="tile tile--a">
+                    <div class="tile__img" data-label="Pottery"></div>
+                    <figcaption><span class="dot"></span> @mira_clay · throwing a bowl</figcaption>
+                </figure>
+                <figure class="tile tile--b">
+                    <div class="tile__img" data-label="Latte art"></div>
+                    <figcaption><span class="dot"></span> @benbrews · rosetta</figcaption>
+                </figure>
+                <figure class="tile tile--c">
+                    <div class="tile__img" data-label="Welding"></div>
+                    <figcaption><span class="dot"></span> @ironkid · clean bead</figcaption>
+                </figure>
+                <figure class="tile tile--d">
+                    <div class="tile__img" data-label="Sourdough"></div>
+                    <figcaption><span class="dot"></span> @loaf.life · 80% hydration</figcaption>
+                </figure>
+            </div>
+
+            <footer class="showcase__foot">
+                <span>v0.3 · early access</span>
+                <span>made with care, not algorithms</span>
+            </footer>
+        </aside>
+
+        <!-- ============ RIGHT: AUTH PANEL ============ -->
+        <main class="auth">
+            <div class="auth__inner">
+
+                <header class="auth__head">
+                    <div class="brand-mobile">
+                        <span class="logo-mark">◐</span>
+                        <span class="logo-word">SkillShare<span class="logo-dot">.me</span></span>
+                    </div>
+                    <h2>Welcome back</h2>
+                    <p class="sub">Sign in to keep building your skill feed.</p>
+                </header>
+
+                <button type="button" class="btn-google" onclick="window.location.href='/auth/google'">
+                    <span class="g-icon" aria-hidden="true">G</span>
+                    Continue with Google
+                </button>
+
+                <div class="divider"><span>or sign in with email</span></div>
+
+                <form class="form" id="loginForm" novalidate>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" placeholder="you@domain.com" autocomplete="email"
+                            required>
+                    </div>
+
+                    <div class="field">
+                        <div class="field__row">
+                            <label for="password">Password</label>
+                            <a href="#" class="forgot">Forgot?</a>
+                        </div>
+
+                        <!-- CSS-only show/hide password toggle -->
+                        <div class="password-wrap">
+                            <input type="password" name="password" id="password" placeholder=" "
+                                autocomplete="current-password" required>
+                            <input type="checkbox" id="reveal" class="reveal-toggle" hidden>
+                            <label for="reveal" class="reveal" title="Show password">
+                                <span class="reveal__eye-on">show</span>
+                                <span class="reveal__eye-off">hide</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="remember">
+                        <input type="checkbox" name="remember">
+                        <span class="check"></span>
+                        Keep me signed in
+                    </label>
+
+                    <button type="submit" class="btn-primary">
+                        Sign in
+                        <span class="arrow">→</span>
+                    </button>
+                </form>
+
+                <p class="switch">
+                    New to SkillShare.me?
+                    <a href="/signUp">Create an account</a>
+                </p>
+
+                <footer class="auth__foot">
+                    <a href="#">Terms</a>
+                    <span>·</span>
+                    <a href="#">Privacy</a>
+                    <span>·</span>
+                    <a href="#">Help</a>
+                </footer>
+            </div>
+        </main>
+
+    </div>
+
+</body>
+<script>
+   // Password show/hide toggle — keep this exactly as you had it
+const toggle = document.querySelector('.reveal-toggle');
+const passwordInput = document.querySelector('#password');
+const eyeOn = document.querySelector('.reveal__eye-on');
+const eyeOff = document.querySelector('.reveal__eye-off');
+
+toggle.addEventListener('change', () => {
+    if (toggle.checked) {
+        passwordInput.type = "text";
+        eyeOn.style.display = "none";
+        eyeOff.style.display = "inline";
+    } else {
+        passwordInput.type = "password";
+        eyeOn.style.display = "inline";
+        eyeOff.style.display = "none";
+    }
+});
+
+const loginForm = document.getElementById('loginForm');
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();  // stops the form from doing old-school submit
+
+    // NOW read the values — user has typed them in by this point
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user_id',data.user_id);
+            window.location.href = '/dashboard';
+        } else {
+            // Show the error from your backend
+            alert(data.error || 'Login failed');
+        }
+
+    } catch (err) {
+        alert('Something went wrong, please try again');
+        console.error(err);
+    }
+});
+</script>
+
+</html>

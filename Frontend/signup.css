@@ -1,0 +1,312 @@
+/* =====================================================
+   SkillShare.me — Signup
+   Extends login.css. Adds: topbar / back link, prefix
+   input, textarea, two-up grid, password strength bar,
+   preview-post showcase.
+   ===================================================== */
+
+/* Put auth left, showcase right (reverse of login) */
+.page--reverse {
+    grid-template-columns: 1fr 1.05fr;
+}
+.page--reverse .auth { border-left: 0; border-right: 1px solid var(--line); }
+
+/* widen form column to fit two-up grid */
+.page--reverse .auth__inner { max-width: 460px; }
+
+/* ---------- topbar (back link) ---------- */
+.auth__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 12px 8px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .05s ease;
+}
+.back-link:hover {
+    background: var(--field-bg);
+    color: var(--ink);
+    border-color: var(--ink-mute);
+}
+.back-link:hover .back-arrow { transform: translateX(-2px); }
+.back-link:active { transform: translateY(1px); }
+.back-arrow {
+    font-size: 16px;
+    line-height: 1;
+    transition: transform .2s ease;
+}
+
+/* eyebrow tag above the title */
+.eyebrow {
+    display: inline-block;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 5px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+
+/* tighten headings a touch for signup (more content) */
+.page--reverse .auth__head h2 { font-size: 30px; }
+.page--reverse .auth__head .sub { font-size: 14.5px; }
+
+/* ---------- two-up field grid ---------- */
+.field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+@media (max-width: 540px) {
+    .field-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- prefix input (@username) ---------- */
+.prefix-input {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: var(--field-bg);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.prefix-input:hover { border-color: var(--ink-mute); }
+.prefix-input:focus-within {
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.prefix-input .prefix {
+    display: inline-grid;
+    place-items: center;
+    padding: 0 10px 0 14px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    background: transparent;
+    border-right: 1px solid var(--line);
+}
+.prefix-input input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding: 13px 14px 13px 10px;
+    font: inherit;
+    color: var(--ink);
+    outline: none;
+}
+.prefix-input input::placeholder { color: var(--ink-mute); }
+
+/* ---------- hint text ---------- */
+.hint {
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-weight: 500;
+}
+.hint--end { align-self: flex-end; margin-top: 2px; }
+
+/* ---------- textarea ---------- */
+.form textarea {
+    appearance: none;
+    width: 100%;
+    background: var(--field-bg);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 78px;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    font-family: inherit;
+}
+.form textarea::placeholder { color: var(--ink-mute); }
+.form textarea:hover { border-color: var(--ink-mute); }
+.form textarea:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* ---------- decorative password strength bar ----------
+   No JS — uses :placeholder-shown + :valid as a rough proxy.
+   It's visual feedback, not a real entropy check.
+   ----------------------------------------------------- */
+.strength {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    margin-top: 4px;
+}
+.strength span {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--line);
+    transition: background .25s ease;
+}
+.strength em {
+    grid-column: 1 / -1;
+    font-style: normal;
+    font-size: 11.5px;
+    color: var(--ink-mute);
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+}
+
+/* When password has any content (not placeholder shown) — show some bars */
+.password-wrap input[type="password"]:not(:placeholder-shown) ~ .strength span:nth-child(-n+2),
+.password-wrap input[type="password"]:not(:placeholder-shown) + .reveal-toggle ~ .reveal ~ .strength span:nth-child(-n+2) {
+    background: oklch(0.75 0.14 60);
+}
+/* When password is "valid" (passes minlength=8 / required) — full strength */
+#password:valid ~ .strength span {
+    background: oklch(0.65 0.16 145); /* green-ish */
+}
+#password:valid ~ .strength em {
+    color: oklch(0.45 0.14 145);
+}
+#password:valid ~ .strength em::before {
+    content: "✓ ";
+    font-weight: 800;
+}
+
+/* sit the auth__head closer to the topbar */
+.page--reverse .auth__head { margin-top: 4px; }
+
+/* =====================================================
+   SHOWCASE — alt copy + preview-post card
+   ===================================================== */
+.showcase--alt {
+    /* flip the gradient direction for a fresh feel */
+    background:
+        radial-gradient(1000px 600px at 100% 0%, oklch(0.96 0.05 65) 0%, transparent 55%),
+        radial-gradient(900px 700px at 0% 100%, oklch(0.93 0.06 35) 0%, transparent 50%),
+        var(--bg);
+    padding: 36px 48px 28px;
+}
+
+.showcase--alt .showcase__headline h1 {
+    font-size: clamp(44px, 5vw, 72px);
+}
+
+.preview-post {
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 380px;
+    width: 100%;
+    align-self: center;
+    position: relative;
+    transform: rotate(-1deg);
+    transition: transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.preview-post:hover { transform: rotate(0deg) translateY(-2px); }
+
+.preview-post__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+.preview-post__head .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    display: inline-grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 16px;
+}
+.preview-post__head > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.preview-post__head strong { font-size: 13.5px; color: var(--ink); }
+.preview-post__head .meta { font-size: 12px; color: var(--ink-mute); }
+.preview-post__head .more {
+    color: var(--ink-mute);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.preview-post__img {
+    aspect-ratio: 4 / 5;
+    border-radius: 10px;
+    background:
+        repeating-linear-gradient(135deg,
+            oklch(0.88 0.04 60) 0 12px,
+            oklch(0.92 0.03 60) 12px 24px);
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+.preview-post__img::after {
+    content: attr(data-label);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: rgba(255,255,255,.7);
+    padding: 6px 10px;
+    border-radius: 999px;
+}
+
+.preview-post__actions {
+    display: flex;
+    gap: 16px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+.preview-post__actions span:first-child { color: var(--accent); }
+
+.preview-post__caption {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+.preview-post__caption strong { color: var(--ink); margin-right: 6px; }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 960px) {
+    .page--reverse { grid-template-columns: 1fr; }
+    .showcase--alt { display: none; }
+    .page--reverse .auth { border-right: 0; padding: 22px 22px 28px; }
+    .auth__topbar { margin-bottom: 14px; }
+}
+
+@media (max-width: 420px) {
+    .page--reverse .auth__head h2 { font-size: 26px; }
+    .back-text { display: none; }
+    .back-link { padding: 8px 10px; }
+}

@@ -25,9 +25,9 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname,'Frontend')));
+app.use(express.static(path.join(__dirname, 'Frontend')));
 
-console.log(path.join(__dirname,'Frontend'));
+// console.log(path.join(__dirname,'Frontend'));
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -365,13 +365,60 @@ app.post('/posts', authenticateJWT, upload.single('image'), async (req, res) => 
     }
 })
 
-// app.get('/posts/:post_id',async(req,res)=>{
+// This is for getting the comments on the post
+
+//<div class="modal-body" id="commentsDisplay">
+//  <!--All comments in the desc-->
+//</div>
+
+app.get('/posts/:postId/comments', authenticateJWT, requireRole('admin', 'customer'), async (req, res) => {
+    
+    const postId = req.params.postId;
+   
+
+    try {
+        const result = await pool.query(
+            `SELECT users.username,comments.post_id,comments.user_id,comments.comment_text
+             FROM users INNER JOIN comments
+             ON users.user_id=comments.user_id
+            WHERE post_id=$1`, [postId])
+
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json(err.message);
+    }
 
 
 
 
+})
 
-// });
+// This is for posting the comment
+
+app.post('/posts/:postId/comment',authenticateJWT,requireRole('customer','admin'),async (req,res)=>{
+
+    const {comment}=req.body;
+    const userId=req.user.userId;
+    const postId=req.params.postId;
+try{
+    const result=await pool.query(`
+        INSERT INTO comments (user_id,post_id,comment_text)
+        VALUES ($1,$2,$3) RETURNING *
+        `,[userId,postId,comment]);
+
+     res.status(201).json({
+        message:'Comment made',
+        comment:result.rows[0]
+     })
+
+    }catch(err){
+        res.status(500).json(err.message);
+    }
+
+
+
+
+})
 
 
 app.get('/profile', (req, res) => {
@@ -441,7 +488,7 @@ app.patch('/profile/:user_id', authenticateJWT, requireRole('customer', 'admin')
 
 
         } catch (err) {
-            res.status(500).json({error:err.message});
+            res.status(500).json({ error: err.message });
         }
     }
 

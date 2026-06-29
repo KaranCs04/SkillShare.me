@@ -525,7 +525,7 @@ app.post('/chatbot', async (req, res) => {
             return res.status(400).json({ error: 'A question is required' });
         }
 
-        const aiResponse = await fetch('http://localhost:4000/chat', {
+        const aiResponse = await fetch('https://profound-solace-production-0cae.up.railway.app/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message })

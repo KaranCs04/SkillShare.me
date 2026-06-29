@@ -519,6 +519,8 @@ app.get('/user/posts/:user_id', authenticateJWT, requireRole('customer', 'admin'
 });
 
 app.post('/chatbot', async (req, res) => {
+
+    console.log("Chatbot route hit");
     try {
         const { message } = req.body;
         if (!message || message.trim() === '') {

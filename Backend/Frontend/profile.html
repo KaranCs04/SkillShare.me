@@ -45,7 +45,7 @@
 
                 <!--Here is can it image of profilee-->
                 <div class="profile-identity">
-                    <h2 class="profile-username" id="username"></h2>
+                   <h2 class="profile-username" id="username">Loading...</h2>
 
                 </div>
                 <!--Here can be its Edit profile button-->
@@ -90,7 +90,7 @@
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
-            renderProfile(data);<
+            renderProfile(data);
         } catch (err) {
             console.log(err);
         }
@@ -98,7 +98,7 @@
     // This P following_count can be changed into the button
     // Giving the user to allow person they follows
     function renderProfile(profile) {
-        document.getElementById('username').textContent=`<h2>${profile.username}</h2>`
+        document.getElementById('username').textContent=`${profile.username}`
         document.getElementById('follower-count').innerHTML = `
         
         <p> ${profile.following_count}</p>

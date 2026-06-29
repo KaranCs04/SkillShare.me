@@ -175,6 +175,8 @@
 
         if (tokenFromUrl) {
             localStorage.setItem('token', tokenFromUrl);
+            const payload = JSON.parse(atob(tokenFromUrl.split('.')[1]));
+            localStorage.setItem('user_id', payload.userId);
             window.history.replaceState({}, document.title, '/dashboard');
         }
 

@@ -37,6 +37,7 @@ app.post('/chat', async (req, res) => {
         res.json({ answer });
 
     } catch (err) {
+        console.log(err.message);
         res.status(500).json({ error: 'Failed to get a response from AI' });
     }
 });

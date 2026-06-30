@@ -10,8 +10,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap"
         rel="stylesheet">
-</head>
-<!-- 1. Design tokens (same :root variables as login) -->
+
+    <!-- 1. Design tokens (same :root variables as login) -->
     <link rel="stylesheet" href="login.css">
 
     <!-- 2. Chat-specific styles -->
@@ -20,6 +20,8 @@
     <!-- Socket.io client -->
     <script src="https://skillshareme-production.up.railway.app/socket.io/socket.io.js"></script>
     <!-- <script src="/socket-init.js"></script> -->
+</head>
+
 <body>
     <nav class="topnav">
         <div class="topnav__inner">
@@ -75,7 +77,7 @@
 
 </body>
 <script>
-  
+    const socket = io();
     const token=localStorage.getItem('token');
     const payload = JSON.parse(atob(token.split('.')[1]));
     const currentUserId = payload.userId;
@@ -183,10 +185,11 @@
 
     // CurrentUser
 
-     const socket = io('http://localhost:3000');
+     
 
     socket.on('connect', () => {
         console.log('Socket connected: ', socket.id);
+        socket.emit('register',currentUserId);
     });
 
     socket.on('receive-message', (message) => {

@@ -11,11 +11,15 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,500&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
         rel="stylesheet">
+    
+
 
     <link rel="stylesheet" href="dashboard.css">
     <!--This is also needs to changed -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="/socket-init.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 
 
@@ -292,7 +296,13 @@
     function addBubble(text, sender) {
         const bubble = document.createElement('div');
         bubble.classList.add('msg-bubble', sender);
-        bubble.textContent = text;
+
+        if(sender==='bot'){
+            bubble.innerHTML=marked.parse(text);
+        }else{
+            bubble.textContent=text;
+        }
+    
         messagesAreaAI.appendChild(bubble);
         messagesAreaAI.scrollTop = messagesAreaAI.scrollHeight;
     }
@@ -336,8 +346,8 @@
             hideTyping();
             addBubble(data.answer, 'bot');
         } catch (err) {
-            hideTyping();                                    // ✅ hide typing on error too
-            addBubble('Something went wrong.', 'bot');       // ✅ show error in chat
+            hideTyping();                                    
+            addBubble('Something went wrong.', 'bot');       
             console.log(err);
         }
     };

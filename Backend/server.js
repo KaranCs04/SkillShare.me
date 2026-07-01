@@ -300,9 +300,9 @@ app.get('/dashboard/feed', authenticateJWT, requireRole('customer', 'admin'), as
         const userId = req.user.userId;
 
         const result = await pool.query(`
-            SELECT u.user_id, u.username,p.post_id, p.image_url, p.caption, p.created_at,
+            SELECT u.user_id, u.avatar_url,u.username,p.post_id, p.image_url, p.caption, p.created_at,
             (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) AS like_count,
-        EXISTS(SELECT 1 FROM likes WHERE post_id = p.post_id AND user_id = $1) AS liked_by_me
+            EXISTS(SELECT 1 FROM likes WHERE post_id = p.post_id AND user_id = $1) AS liked_by_me
             FROM post p
             JOIN users u ON u.user_id = p.user_id
             WHERE p.user_id = $1

@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="dashboard.css">
     <!--This is also needs to changed -->
     <script src="https://skillshareme-production.up.railway.app/socket.io/socket.io.js"></script>
-    <script src="/socket-init.js"></script>
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
@@ -396,11 +396,17 @@
             card.className = 'post-card';
             const initial = photo.username.charAt(0).toUpperCase();
             const url = photo.image_url.replace('/upload/', '/upload/w_320,h_240,c_fill/');
-
+            const avatar_url=photo.avatar_url;
+            console.log(avatar_url);
             // This is the putting the everything about the post into html
             card.innerHTML = `
             <div class="post-header">
-            <div class="post-header-avatar">${initial}</div>
+            <div class="post-header-avatar">
+           ${avatar_url 
+    ? `<img src="${avatar_url.trim()}" alt="${photo.username}" class="avatar-img"/>` 
+    : initial}
+
+            </div>
         <span class="post-username">${photo.username}</span>
     </div>
       <img 
